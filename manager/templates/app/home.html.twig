@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Binary tree (int){% endblock %}
+
+{% block body %}
+    {% if nodes is not empty%}
+    <div class="tree">
+        <ul>
+            <li>
+                <a>{{ nodes.value|e }}</a>
+                {{ include('app/recursive.tree.html.twig', {
+                    'left': nodes.left,
+                    'right': nodes.right,
+                }) }}
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+
+    <table class="table table-striped table-dark col-lg-12"></table>
+
+    <a class="list-group-item list-group-item-action col-lg-2"
+       href="{{ path('node_index') }}"
+    >{{ 'Go to Binary Tree CRUD(Tree sort)' | trans }}</a>
+    <a class="list-group-item list-group-item-action list-group-item-primary col-lg-2"
+       href="{{ path('node_seeds') }}"
+    >{{ 'Auto generating seeds' | trans }}</a>
+{% endblock %}

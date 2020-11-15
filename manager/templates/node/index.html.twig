@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Binary tree (int){% endblock %}
+
+{% block body %}
+    <h1>Node index</h1>
+    <a class="list-group-item list-group-item-action list-group-item-dark col-lg-3"
+       href="{{ path('homepage') }}"
+    >Back to view</a>
+
+    {% for error in app.flashes('error') %}
+        <div class="alert alert-danger" role="alert">
+            {{ error.message }}
+        </div>
+    {% endfor %}
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Value</th>
+            <th>Left</th>
+            <th>Right</th>
+            <th>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for node in nodes %}
+            <tr>
+                <td>{{ node.value }}</td>
+                {% if node.left is not null %}
+                    <td>{{ node.left.value }}</td>
+                {% else %}
+                    <td>{{ '-' }}</td>
+                {% endif %}
+                {% if node.right is not null %}
+                    <td>{{ node.right.value }}</td>
+                {% else %}
+                    <td>{{ '-' }}</td>
+                {% endif %}
+                <td>
+                    <a class="btn btn-danger" href="{{ path('node_delete', {'value': node.value}) }}">delete</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="list-group-item list-group-item-action list-group-item-success col-lg-3"
+       href="{{ path('node_new') }}"
+    >Create new</a>
+
+{% endblock %}

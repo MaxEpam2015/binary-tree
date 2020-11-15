@@ -1,0 +1,21 @@
+<ul>
+    {% if left is not null and left is iterable %}
+        <li>
+            <a>{{ left.value|e }}</a>
+            {{ include('app/recursive.tree.html.twig', {
+                'left': left.left,
+                'right': left.right,
+            }) }}
+        </li>
+    {% endif %}
+
+    {% if right is not null and right is iterable %}
+        <li>
+            <a>{{ right.value|e }}</a>
+            {{ include('app/recursive.tree.html.twig', {
+                'left': right.left,
+                'right': right.right,
+            }) }}
+        </li>
+    {% endif %}
+</ul>
