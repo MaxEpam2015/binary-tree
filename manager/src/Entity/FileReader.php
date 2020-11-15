@@ -7,10 +7,12 @@ use Exception;
 
 trait FileReader
 {
+    static $fileName = 'binary-tree.json';
+
     public static function getFile()
     {
         try {
-            $jsonString = file_get_contents('binary-tree.json');
+            $jsonString = file_get_contents(self::$fileName);
             $jsonDecodeTree = json_decode($jsonString, true);
             return $jsonDecodeTree;
         } catch (Exception $exception) {
@@ -26,7 +28,7 @@ trait FileReader
 
             $jsonData = json_encode($array);
 
-            $fp = fopen('binary-tree.json', 'w');
+            $fp = fopen(self::$fileName, 'w');
             fwrite($fp, $jsonData);
             fclose($fp);
         } catch (Exception $exception) {

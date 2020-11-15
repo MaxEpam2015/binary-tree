@@ -4,6 +4,7 @@
 ```
 make init
 docker-compose run --rm manager-php-cli composer install
+sudo chmod -R 777 manager/public
 ```
 
 -Other commands for help:
