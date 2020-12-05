@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\FileReader;
-use App\Entity\Node;
-use App\Repository\BinarySearchTreeRepository;
+use App\Repository\Contracts\FileReaderRepositoryInterface;
+use App\Facade\Node;
+use App\Facade\BinaryTreeFacade;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,16 +16,35 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class NodeController extends AbstractController
 {
-    use FileReader;
+    /**
+     * @var FileReaderRepositoryInterface
+     */
+    private $fileReaderRepository;
+
+    /**
+     * @var Node|null
+     */
+    private $node;
+
+    /**
+     * NodeController constructor.
+     * @param FileReaderRepositoryInterface $fileReaderRepository
+     * @param Node|null $node
+     */
+    public function __construct(FileReaderRepositoryInterface $fileReaderRepository, Node $node = null)
+    {
+        $this->fileReaderRepository = $fileReaderRepository;
+        $this->node = $node;
+    }
 
     /**
      * @Route("/", name="node_index", methods={"GET"})
      */
     public function index(): Response
     {
-        $jsonDecodeTree = FileReader::getFile();
+        $jsonDecodeTree = $this->fileReaderRepository->getFile();
         if (is_array($jsonDecodeTree)) {
-            $tree = new BinarySearchTreeRepository($jsonDecodeTree['value']);
+            $tree = new BinaryTreeFacade($jsonDecodeTree['value']);
             $sortedTree = $tree->sort($jsonDecodeTree);
         }
 
@@ -39,13 +58,13 @@ class NodeController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        $node = new Node(null);
         $nodeValue = !empty ($request->request->get('value')) ? $request->request->get('value') : null;
-
         if (!empty($nodeValue)) {
-            $jsonDecodeTree = !is_null(FileReader::getFile()) ? FileReader::getFile() : [];
+            $jsonDecodeTree = !is_null($this->fileReaderRepository->getFile())
+                ? $this->fileReaderRepository->getFile()
+                : [];
 
-            $tree = new BinarySearchTreeRepository($jsonDecodeTree['value'] ?? $nodeValue);
+            $tree = new BinaryTreeFacade($jsonDecodeTree['value'] ?? $nodeValue);
             if ($jsonDecodeTree) {
                 $tree->add(new Node($nodeValue));
             } else {
@@ -53,13 +72,13 @@ class NodeController extends AbstractController
                 $jsonDecodeTree = (array) $objectToArray[array_key_first($objectToArray)];
             }
             $tree->arrayToNode($jsonDecodeTree);
-            FileReader::setDataToFile($tree);
+            $this->fileReaderRepository->setDataToFile($tree);
 
             return $this->redirectToRoute('node_index');
         }
 
         return $this->render('node/new.html.twig', [
-            'node' => $node,
+            'node' => $this->node,
         ]);
     }
 
@@ -68,16 +87,14 @@ class NodeController extends AbstractController
      */
     public function delete(Request $request, int $value): Response
     {
-        $jsonDecodeTree = FileReader::getFile();
+        $jsonDecodeTree = $this->fileReaderRepository->getFile();
         if ($jsonDecodeTree['value'] == $value) {
-            $this->addFlash(
-                'error', ['message' => "You can't delete root!"]
-            );
+            $this->addFlash('error', ['message' => "You can't delete root!"]);
         }
-        $tree = new BinarySearchTreeRepository($jsonDecodeTree['value']);
+        $tree = new BinaryTreeFacade($jsonDecodeTree['value']);
         $tree->arrayToNode($jsonDecodeTree);
         $tree->delete(new Node(intval($value)));
-        FileReader::setDataToFile($tree);
+        $this->fileReaderRepository->setDataToFile($tree);
 
         return $this->redirectToRoute('node_index');
     }
@@ -87,7 +104,7 @@ class NodeController extends AbstractController
      */
     public function seeds(): Response
     {
-        $tree = new BinarySearchTreeRepository(6);
+        $tree = new BinaryTreeFacade(6);
         $tree->add(new Node(10));
         $tree->add(new Node(11));
         $tree->add(new Node(9));
@@ -95,7 +112,7 @@ class NodeController extends AbstractController
         $tree->add(new Node(12));
         $tree->add(new Node(15));
         $tree->add(new Node(8));
-        FileReader::setDataToFile($tree);
+        $this->fileReaderRepository->setDataToFile($tree);
 
         return $this->redirectToRoute('node_index');
     }

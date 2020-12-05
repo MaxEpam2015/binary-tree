@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Repository;
+namespace App\Facade;
 
-use App\Entity\Node;
-
-class BinarySearchTreeRepository
+class BinaryTreeFacade
 {
     /**
      * @var Node
@@ -12,7 +10,7 @@ class BinarySearchTreeRepository
     private Node $_root;
 
     /**
-     * BinarySearchTreeRepository constructor.
+     * BinaryTreeStrategy constructor.
      * @param int|null $value
      */
     public function __construct(?int $value)
@@ -37,7 +35,6 @@ class BinarySearchTreeRepository
         $this->_root->add($node);
         return $this;
     }
-
 
     /**
      * @param array $array

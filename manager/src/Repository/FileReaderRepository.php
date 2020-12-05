@@ -1,15 +1,19 @@
 <?php
 
-namespace App\Entity;
+namespace App\Repository;
 
-use App\Repository\BinarySearchTreeRepository;
+use App\Repository\Contracts\FileReaderRepositoryInterface;
+use App\Facade\BinaryTreeFacade;
 use Exception;
 
-trait FileReader
+class FileReaderRepository implements FileReaderRepositoryInterface
 {
     static $fileName = 'binary-tree.json';
 
-    public static function getFile()
+    /**
+     * @return mixed|string
+     */
+    public function getFile()
     {
         try {
             $jsonString = file_get_contents(self::$fileName);
@@ -20,7 +24,7 @@ trait FileReader
         }
     }
 
-    public static function setDataToFile(BinarySearchTreeRepository $tree)
+    public function setDataToFile(BinaryTreeFacade $tree)
     {
         try {
             $objectToArray = (array)$tree;

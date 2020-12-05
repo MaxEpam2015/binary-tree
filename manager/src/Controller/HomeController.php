@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\FileReader;
+use App\Repository\Contracts\FileReaderRepositoryInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,8 +12,19 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class HomeController extends AbstractController
 {
-    use FileReader;
+    /**
+     * @var FileReaderRepositoryInterface
+     */
+    private $fileReaderRepository;
 
+    /**
+     * HomeController constructor.
+     * @param FileReaderRepositoryInterface $fileReaderRepository
+     */
+    public function __construct(FileReaderRepositoryInterface $fileReaderRepository)
+    {
+        $this->fileReaderRepository = $fileReaderRepository;
+    }
     /**
      * @Route("/", name="homepage")
      * @return Response
@@ -21,7 +32,7 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         return $this->render('app/home.html.twig', [
-            'nodes' => is_array(FileReader::getFile()) ? FileReader::getFile() : null,
+            'nodes' => is_array($this->fileReaderRepository->getFile()) ? $this->fileReaderRepository->getFile() : null,
         ]);
     }
 }

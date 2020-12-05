@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entity;
+namespace App\Facade;
 
 class Node
 {
@@ -21,11 +21,11 @@ class Node
 
     /**
      * Node constructor.
-     * @param $val
+     * @param $value
      */
-    public function __construct($val)
+    public function __construct($value)
     {
-        $this->value = $val;
+        $this->value = $value;
     }
 
     /**
